@@ -1,48 +1,114 @@
 
-// Local Server or Heroku's Port
+const _port = process.env.PORT || 1212;
 
-const _PORT = process.env.PORT /* Heroku's Port */ || 8080;
-
-// modules here
-
-import typeDefs from './typeDefs';
-import resolvers from './resolvers/combineResolvers'
-import middleware from './middleware/combineMiddleware';
-
+import http from 'http'
+import express from "express";
 import { Socket } from 'socket.io';
-import { ApolloServer } from 'apollo-server-express';
 
-const app    = require('express')();
-const server = require('http').Server(app);
-const io     = require('socket.io')(server, {
+const app = express();
+const server = http.createServer(app);
+
+const io = require('socket.io')(server, {
     cors: {
-        origin: "http://localhost:3000"
-      }
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
 });
 
-const ApolloExpressServer = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: middleware
-});
-
-
-let users: Array<string> = [];
+let clients: {[index: string]: { x: number, y: number }} = {};
 
 io.on('connection', ( socket: Socket ) => {
-    console.log(`hello world from server, socket id is ${socket.id}`)
-    users.push(socket.id);
-    console.log(`users: ${users}`)
 
-    socket.on("disconnect", () => {
-        users = users.filter(user => user !== socket.id);
-        console.log(`user ${socket.id} disconnected`)
-        console.log(`current users is ${users}`)
+    socket.on("move", ( res: { id: string, x: number, y: number }) => {
+
+        console.log(res.x)
+
+        if( clients[res.id] ) {
+            clients[res.id].x = res.x
+            clients[res.id].y = res.y
+        }
+        
+        // wall detction 
+        if( clients[res.id].y > 450 ) {
+            clients[res.id].y = 450
+        }
+        if( clients[res.id].x < 10 ) {
+            clients[res.id].x = 10
+        }
+        if( clients[res.id].y < 10 ) {
+            clients[res.id].y = 10
+        }
+        if( clients[res.id].x > 610 ) {
+            clients[res.id].x = 610
+        }
+
+
+        io.emit('position', clients);
+
     })
-});
 
-server.listen(_PORT, () => {
-    console.log(`Server is now listening...`)
+    socket.on('newClient',  ( clientData ) => {
+        clients[socket.id] = clientData;
+        console.log(clients)
+        //io.emit('currentClients', clients);
+        socket.emit('registerId', socket.id)
+        io.emit('position', clients);
+    });
+
+    socket.on('disconnect', () => {
+        delete clients[socket.id];
+        console.log(clients)
+        io.emit('position', clients);
+        //io.emit('currentClients', clients)
+    });
+
+})
+
+server.listen(_port, () => {
+    console.log(`server listening`)
 })
 
 
+/* 
+
+
+
+socket.on("move", ( res: { id: string, keyCode: number, type: string } ) => {
+
+        console.log(res)
+        
+        // key state 
+        let left = false;
+        let up = false;
+        let right = false;
+        let down = false;
+
+        let keyState = res.type === "keydown" ? true : false;
+
+        if( res.keyCode === 37 ) {
+            left = keyState;
+            clients[res.id].x--
+        }
+        if( res.keyCode === 38 ) {
+            up = keyState;
+            clients[res.id].y--
+        }
+        if( res.keyCode === 39 ) {
+            right = keyState;
+            clients[res.id].x++
+        }
+        if( res.keyCode === 40 ) {
+            down = keyState;
+            clients[res.id].y++
+        }
+        
+
+
+        io.emit('position', clients);
+
+    })
+
+
+
+
+*/
