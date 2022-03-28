@@ -15,13 +15,25 @@ const io = require('socket.io')(server, {
     }
 });
 
-let clients: {[index: string]: { x: number, y: number }} = {};
+let clients: {[index: string]: { x: number, y: number, host: boolean }} = {};
+
+let egg = {
+    x: 50,
+    y: 50
+}
 
 io.on('connection', ( socket: Socket ) => {
 
-    socket.on("move", ( res: { id: string, x: number, y: number }) => {
+    socket.on('makeHost', (data) => {
+        if(Object.keys(clients).length === 1) {
+            clients[ Object.keys(clients)[0] ].host = true
+        }
+        //clients['egg'] = { x: 50, y: 50 }
+    })
 
-        console.log(res.x)
+    socket.on("move", ( res: { id: string, x: number, y: number, host: boolean }) => {
+
+        console.log(res.host)
 
         if( clients[res.id] ) {
             clients[res.id].x = res.x
@@ -49,17 +61,26 @@ io.on('connection', ( socket: Socket ) => {
 
     socket.on('newClient',  ( clientData ) => {
         clients[socket.id] = clientData;
-        console.log(clients)
-        //io.emit('currentClients', clients);
         socket.emit('registerId', socket.id)
+
+        if(Object.keys(clients).length === 1) {
+            clients[ Object.keys(clients)[0] ].host = true
+        }
+
+        console.log(clients)
         io.emit('position', clients);
     });
 
     socket.on('disconnect', () => {
+
+        if(clients[socket.id].host) {
+            clients[ Object.keys(clients)[0] ].host = true
+        }
+
         delete clients[socket.id];
+
         console.log(clients)
         io.emit('position', clients);
-        //io.emit('currentClients', clients)
     });
 
 })
