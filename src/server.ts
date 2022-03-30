@@ -15,43 +15,72 @@ const io = require('socket.io')(server, {
     }
 });
 
-let clients: {[index: string]: { x: number, y: number, host: boolean }} = {};
+let clients: {[index: string]: { 
+    x: number, y: number, host: boolean, height: number, width: number 
+}} = {};
 
-let egg = {
-    x: 50,
-    y: 50
-}
 
 io.on('connection', ( socket: Socket ) => {
 
-    socket.on('makeHost', (data) => {
-        if(Object.keys(clients).length === 1) {
-            clients[ Object.keys(clients)[0] ].host = true
+    if( !clients['egg'] ) {
+        clients['egg'] = { x: 320, y: 240, height: 20, width: 20, host: false, }
+    }
+
+    setInterval(() => {
+
+        let currentObjs = Object.keys(clients)
+
+        if(clients['egg']) {
+            //clients['egg'].x++;
+
+            if( clients[ currentObjs[ 1 ] ] ) {
+                if( clients[ currentObjs[1] ].x - clients['egg'].x > -20 
+                    && clients[ currentObjs[1] ].x - clients['egg'].x < 20 
+                        && clients[ currentObjs[1] ].y - clients['egg'].y > -20 
+                            && clients[ currentObjs[1] ].y - clients['egg'].y < 20  ) {
+                    console.log('touching')
+                }
+            }
+
+            if( clients['egg'].y > 450 ) {
+                clients['egg'].y = 450
+            }
+            if( clients['egg'].x < 10 ) {
+                clients['egg'].x = 10
+            }
+            if( clients['egg'].y < 10 ) {
+                clients['egg'].y = 10
+            }
+            if( clients['egg'].x > 610 ) {
+                clients['egg'].x = 610
+            }
+
+            io.emit('position', clients)
         }
-        //clients['egg'] = { x: 50, y: 50 }
-    })
+    }, 1000/60)
+    
 
     socket.on("move", ( res: { id: string, x: number, y: number, host: boolean }) => {
 
-        console.log(res.host)
-
-        if( clients[res.id] ) {
-            clients[res.id].x = res.x
-            clients[res.id].y = res.y
-        }
-        
-        // wall detction 
-        if( clients[res.id].y > 450 ) {
-            clients[res.id].y = 450
-        }
-        if( clients[res.id].x < 10 ) {
-            clients[res.id].x = 10
-        }
-        if( clients[res.id].y < 10 ) {
-            clients[res.id].y = 10
-        }
-        if( clients[res.id].x > 610 ) {
-            clients[res.id].x = 610
+        if(clients[res.id]) {
+            if( clients[res.id] ) {
+                clients[res.id].x = res.x
+                clients[res.id].y = res.y
+            }
+            
+            // wall detction 
+            if( clients[res.id].y > 450 ) {
+                clients[res.id].y = 450
+            }
+            if( clients[res.id].x < 10 ) {
+                clients[res.id].x = 10
+            }
+            if( clients[res.id].y < 10 ) {
+                clients[res.id].y = 10
+            }
+            if( clients[res.id].x > 610 ) {
+                clients[res.id].x = 610
+            }
         }
 
 
@@ -63,23 +92,28 @@ io.on('connection', ( socket: Socket ) => {
         clients[socket.id] = clientData;
         socket.emit('registerId', socket.id)
 
-        if(Object.keys(clients).length === 1) {
-            clients[ Object.keys(clients)[0] ].host = true
+        if(Object.keys(clients).length === 2) {
+            clients[ Object.keys(clients)[1]].host = true
         }
 
-        console.log(clients)
+        //console.log(clients)
         io.emit('position', clients);
     });
 
     socket.on('disconnect', () => {
 
-        if(clients[socket.id].host) {
-            clients[ Object.keys(clients)[0] ].host = true
+        if(clients[socket.id].host ) {
+            clients[ Object.keys(clients)[1] ].host = true
         }
 
         delete clients[socket.id];
 
-        console.log(clients)
+        if( Object.keys(clients).length === 1 ) {
+            //console.log(Object.keys(clients)[0])
+            delete clients['egg']
+        }
+
+        //console.log(clients)
         io.emit('position', clients);
     });
 
