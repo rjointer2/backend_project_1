@@ -18,7 +18,8 @@ const io = require('socket.io')(server, {
 let clients: {[index: string]: { 
     x: number, y: number, host: boolean, 
     height: number, width: number,  
-    dx: number, dy: number, speed: number
+    dx: number, dy: number, speed: number,
+    hold: boolean
 }} = {};
 
 /* 
@@ -34,7 +35,7 @@ io.on('connection', ( socket: Socket ) => {
     if( !clients['egg'] ) {
         clients['egg'] = { x: 320, y: 240, 
             height: 20, width: 20, host: false, 
-            dx: 1, dy: 1, speed: 1
+            dx: .3, dy: .3, speed: 1, hold: false
         }
     }
 
@@ -44,50 +45,35 @@ io.on('connection', ( socket: Socket ) => {
 
         if(clients['egg']) {
 
-            /* const prevX = clients['egg'].x
-            const prevY = clients['egg'].y
-
-            const newX = prevX;
-            const newY = clients['egg'].y;
-
-            clients['egg'].x = newX
-
-            //clients['egg'].x++;
-
-            clients['egg'].dx = prevX - newX
-            clients['egg'].dy = prevY - newY */
-
             if( clients[ currentObjs[ 1 ] ] ) {
-                if( clients[ currentObjs[1] ].x - clients['egg'].x > -20 
-                    && clients[ currentObjs[1] ].x - clients['egg'].x < 20 
-                        && clients[ currentObjs[1] ].y - clients['egg'].y > -20 
-                            && clients[ currentObjs[1] ].y - clients['egg'].y < 20  ) {
+                if( clients[ currentObjs[1] ].x - clients['egg'].x >= -20 
+                    && clients[ currentObjs[1] ].x - clients['egg'].x <= 20 
+                        && clients[ currentObjs[1] ].y - clients['egg'].y >= -20 
+                            && clients[ currentObjs[1] ].y - clients['egg'].y <= 20  ) {
                         
-                        //clients['egg'].dx -= clients[ currentObjs[ 1 ] ].dx
-
-                    /* clients['egg'].x -= clients[ currentObjs[ 1 ] ].dx;
-                    clients['egg'].y -= clients[ currentObjs[ 1 ] ].dy; */
+                       if( clients[ currentObjs[ 1 ] ].hold ) {
+                        console.log('holding')
+                        clients['egg'].x = clients['egg'].x
+                        io.emit('position', clients)
+                        return false
+                       }
+                    // collision
+                    /* clients['egg'].dx = -clients[ currentObjs[ 1 ] ].dx * .9;
+                    clients['egg'].dy = -clients[ currentObjs[ 1 ] ].dy * .9; */
                 }
             }
 
-
-            if( clients['egg'].y > 470 ) {
-                clients['egg'].dy = -clients['egg'].speed
-            }
-            if( clients['egg'].x < 10 ) {
-                clients['egg'].dx = clients['egg'].speed
-            }
-            if( clients['egg'].y < 10 ) {
-                clients['egg'].dy = clients['egg'].speed
-            }
-            if( clients['egg'].x > 630 ) {
-                clients['egg'].dx = -clients['egg'].speed
-            }
+            // bottom wall
+            if( clients['egg'].y > 470 ) clients['egg'].dy = -clients['egg'].dy
+            // right wall
+            if( clients['egg'].x < 10 ) clients['egg'].dx = -clients['egg'].dx
+            // left wall
+            if( clients['egg'].y < 10 ) clients['egg'].dy = -clients['egg'].dy
+            // top wall
+            if( clients['egg'].x > 630 ) clients['egg'].dx = -clients['egg'].dx
 
             clients['egg'].x += clients['egg'].dx
             clients['egg'].y += clients['egg'].dy
-
-            console.log(clients['egg'].x)
 
             io.emit('position', clients)
         }
@@ -97,7 +83,7 @@ io.on('connection', ( socket: Socket ) => {
     socket.on("move", ( res: { 
         id: string, x: number, y: number, 
         host: boolean, dx: number, dy: number,
-        speed: number
+        speed: number, hold: boolean
         }
     ) => {
 
@@ -119,6 +105,8 @@ io.on('connection', ( socket: Socket ) => {
 
             //console.log(`x_vel: ${prevX - newX}, y_vel: ${prevY - newY}`)
 
+            clients[res.id].hold = res.hold
+
 
             
             // wall detction 
@@ -134,6 +122,8 @@ io.on('connection', ( socket: Socket ) => {
             if( clients[res.id].x > 630 ) {
                 clients[res.id].x = 630
             }
+
+            console.log(clients[res.id].hold)
         }
 
 
