@@ -9,21 +9,23 @@ export default function eggResponse( socket: Socket, io: Socket ) {
 
         if(clients['egg']) {
 
-            if( clients[ currentObjs[ 1 ] ] ) {
-                if( clients[ currentObjs[1] ].x - clients['egg'].x >= -20 
-                    && clients[ currentObjs[1] ].x - clients['egg'].x <= 20 
-                        && clients[ currentObjs[1] ].y - clients['egg'].y >= -20 
-                            && clients[ currentObjs[1] ].y - clients['egg'].y <= 20  ) {
-                        
-                       if( clients[ currentObjs[ 1 ] ].hold ) {
-                        console.log('holding')
-                        clients['egg'].x = clients['egg'].x
-                        io.emit('position', clients)
-                        return false
-                       }
-                    // collision
-                    /* clients['egg'].dx = -clients[ currentObjs[ 1 ] ].dx * .9;
-                    clients['egg'].dy = -clients[ currentObjs[ 1 ] ].dy * .9; */
+            for( let id in clients ) {
+                if( clients[id] ) {
+                    if( clients[id].x - clients['egg'].x >= -20 
+                        && clients[id].x - clients['egg'].x <= 20 
+                            && clients[id].y - clients['egg'].y >= -20 
+                                && clients[id].y - clients['egg'].y <= 20  ) {
+                            
+                           if( clients[id].hold ) {
+                            console.log('holding')
+                            clients['egg'].x = clients['egg'].x
+                            io.emit('position', clients)
+                            return false
+                           }
+                        // collision
+                        /* clients['egg'].dx = -clients[ currentObjs[ 1 ] ].dx * .9;
+                        clients['egg'].dy = -clients[ currentObjs[ 1 ] ].dy * .9; */
+                    }
                 }
             }
 
