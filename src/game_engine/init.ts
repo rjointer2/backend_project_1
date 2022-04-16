@@ -1,6 +1,5 @@
 
 import { Socket } from "socket.io";
-import clients from "./clients";
 import connectClient from "./socket_methods/connectClient";
 import disconnectClient from "./socket_methods/disconnectClient";
 import eggResponse from "./socket_methods/eggResponse";
