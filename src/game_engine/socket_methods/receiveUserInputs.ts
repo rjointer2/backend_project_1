@@ -1,20 +1,23 @@
 
+import e from "express";
 import { Socket } from "socket.io";
 import clients from "../clients";
 
 export default function receiveUserInputs( socket: Socket, io: Socket ) {
 
     socket.on('holdEgg', res => {
-        for( let id in clients ) {
-            if( !clients[id] ) return false;
-            if( id === 'egg' ) continue;
-            if( clients[id].x - clients['egg'].x > -40 
-                && clients[id].x - clients['egg'].x < 40 
-                    && clients[id].y - clients['egg'].y > -40 
-                        && clients[id].y - clients['egg'].y < 40  ) {
-                            clients['egg'].hold = res.hold    
-            }
-        }
+        if( clients[res.id].x - clients['egg'].x > -40 
+                && clients[res.id].x - clients['egg'].x < 40 
+                    && clients[res.id].y - clients['egg'].y > -40 
+                        && clients[res.id].y - clients['egg'].y < 40  ) {
+                            clients['egg'].hold = res.hold  
+                            if(!clients['egg'].hold) {
+                                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) / 20
+            clients['egg'].dy = (clients['egg'].y - clients[res.id].y) / 20
+                            }  
+        } 
+        
+        console.log(clients['egg'].hold )
     })
 
     socket.on('aimEgg', ( res: {
@@ -27,24 +30,27 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
         let tempX = res.mx - clients[res.id].x;
 
         if( clients[res.id].x - clients['egg'].x >= -40 
-                && clients[res.id].x - clients['egg'].x <= 40 
-                    && clients[res.id].y - clients['egg'].y >= -40 
-                        && clients[res.id].y - clients['egg'].y <= 40  ) {
-                            if(clients['egg'].hold) {
+            && clients[res.id].x - clients['egg'].x <= 40 
+            && clients[res.id].y - clients['egg'].y >= -40 
+            && clients[res.id].y - clients['egg'].y <= 40 
+        ) {
+            if(clients['egg'].hold) {
 
-                                if(  tempY >= 40 ) y = clients[res.id].y + 40
-                                if( tempY <= -40  ) y = clients[res.id].y - 40
-                        
-                                if(  tempX >= 40 ) x = clients[res.id].x + 40
-                                if( tempX <= -40  ) x = clients[res.id].x - 40
-                        
-                                clients['egg'].y = y
-                                clients['egg'].x = x
+                if(  tempY >= 20 ) y = clients[res.id].y + 20
+                if( tempY <= -20  ) y = clients[res.id].y - 20
+        
+                if(  tempX >= 20 ) x = clients[res.id].x + 20
+                if( tempX <= -20  ) x = clients[res.id].x - 20
 
-                            }
-                                
-                            
+                clients['egg'].dx = 0;
+                clients['egg'].dy = 0;
+        
+                clients['egg'].y = y
+                clients['egg'].x = x
+                
             }
+                                       
+        }
     })
 
     socket.on("move", ( res: { 

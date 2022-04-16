@@ -21,11 +21,6 @@ export default function eggResponse( socket: Socket, io: Socket ) {
             clients['egg'].x += clients['egg'].dx
             clients['egg'].y += clients['egg'].dy
 
-            if( clients['egg'].hold ) {
-                clients['egg'].dx = 0;
-                clients['egg'].dy = 0;
-            }
-
             io.emit('position', clients)
         }
     }, 1000/60)
