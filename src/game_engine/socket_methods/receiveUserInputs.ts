@@ -13,11 +13,11 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
                             clients['egg'].hold = res.hold  
                             if(!clients['egg'].hold) {
                                 clients['egg'].dx = (clients['egg'].x - clients[res.id].x) / 20
-            clients['egg'].dy = (clients['egg'].y - clients[res.id].y) / 20
+                                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) / 20
                             }  
         } 
         
-        console.log(clients['egg'].hold )
+        
     })
 
     socket.on('aimEgg', ( res: {
@@ -56,9 +56,7 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
     socket.on("move", ( res: { 
         id: string, 
         direction: { 
-            ArrowLeft: boolean, ArrowRight: boolean, 
-            ArrowUp: boolean, ArrowDown: boolean,
-            Shift: boolean 
+            [index: KeyboardEvent['key']]: boolean
         }
         host: boolean, dx: number, dy: number,
         speed: number, hold: boolean
@@ -68,15 +66,13 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
 
         if(clients[res.id]) {
 
-            if( !res.direction.Shift ) {
-                if( res.direction.ArrowRight ) clients[res.id].x = clients[res.id].x + 3;
-                if( res.direction.ArrowUp ) clients[res.id].y = clients[res.id].y - 3;
-                if( res.direction.ArrowLeft ) clients[res.id].x = clients[res.id].x - 3;
-                if( res.direction.ArrowDown ) clients[res.id].y = clients[res.id].y + 3;
+            if( !res.direction.q ) {
+                if( res.direction.ArrowRight || res.direction.d ) clients[res.id].x = clients[res.id].x + 3;
+                if( res.direction.ArrowUp || res.direction.w ) clients[res.id].y = clients[res.id].y - 3;
+                if( res.direction.ArrowLeft || res.direction.a ) clients[res.id].x = clients[res.id].x - 3;
+                if( res.direction.ArrowDown || res.direction.s ) clients[res.id].y = clients[res.id].y + 3;
                 clients[res.id].hold = false
             }
-
-            if( res.direction.Shift ) clients[res.id].hold = true
         
             // wall detction 
             if( clients[res.id].y > 460 )   clients[res.id].y = 460
@@ -110,3 +106,19 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
             //prevY - newY > 0 ? console.log('up') : console.log('down');
 
             //console.log(`x_vel: ${prevX - newX}, y_vel: ${prevY - newY}`)
+
+
+            /*  if( clients[res.id].x - clients['egg'].x > -40 
+            && clients[res.id].x - clients['egg'].x < 40 
+            && clients[res.id].y - clients['egg'].y > -40 
+            && clients[res.id].y - clients['egg'].y < 40  ) 
+        {
+            if( canPress[res.id] ) {
+                clients['egg'].hold = res.hold 
+            }
+
+            if(!clients['egg'].hold) {
+                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) / 20
+                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) / 20
+            }  
+        }  */
