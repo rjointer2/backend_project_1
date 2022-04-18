@@ -1,20 +1,29 @@
 
-import e from "express";
 import { Socket } from "socket.io";
 import clients from "../clients";
 
 export default function receiveUserInputs( socket: Socket, io: Socket ) {
 
-    socket.on('holdEgg', res => {
+    let count = 0;
+    let hash: { [index: string]: number } = {};
+
+
+
+    socket.on('holdEgg', (res: { id: string, hold: boolean }) => {
         if( clients[res.id].x - clients['egg'].x > -40 
                 && clients[res.id].x - clients['egg'].x < 40 
                     && clients[res.id].y - clients['egg'].y > -40 
                         && clients[res.id].y - clients['egg'].y < 40  ) {
                             clients['egg'].hold = res.hold  
                             if(!clients['egg'].hold) {
-                                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) / 20
-                                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) / 20
-                            }  
+                                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) * ( hash[res.id] / 100 )
+                                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) * ( hash[res.id] / 100 )
+                                console.log(
+                                    'yspeed: ', clients['egg'].dy,
+                                    'xsped: ', clients['egg'].dx
+                                )
+                            } 
+                            hash[res.id] = count++
         } 
         
         
@@ -106,19 +115,3 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
             //prevY - newY > 0 ? console.log('up') : console.log('down');
 
             //console.log(`x_vel: ${prevX - newX}, y_vel: ${prevY - newY}`)
-
-
-            /*  if( clients[res.id].x - clients['egg'].x > -40 
-            && clients[res.id].x - clients['egg'].x < 40 
-            && clients[res.id].y - clients['egg'].y > -40 
-            && clients[res.id].y - clients['egg'].y < 40  ) 
-        {
-            if( canPress[res.id] ) {
-                clients['egg'].hold = res.hold 
-            }
-
-            if(!clients['egg'].hold) {
-                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) / 20
-                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) / 20
-            }  
-        }  */

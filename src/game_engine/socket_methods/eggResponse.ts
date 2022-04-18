@@ -18,6 +18,16 @@ export default function eggResponse( socket: Socket, io: Socket ) {
             // top wall
             if( clients['egg'].x > 620 ) clients['egg'].dx = -clients['egg'].dx
 
+            if( !( clients['egg'].dy <= .6 && clients['egg'].dx <= .6  ) ) {
+                clients['egg'].dx /= 1.001
+                clients['egg'].dy /= 1.001
+                console.log(
+                    'yspeed: ', clients['egg'].dy,
+                    'xsped: ', clients['egg'].dx
+                )
+            }
+
+
             clients['egg'].x += clients['egg'].dx
             clients['egg'].y += clients['egg'].dy
 
