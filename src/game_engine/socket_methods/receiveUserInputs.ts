@@ -16,14 +16,16 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
                         && clients[res.id].y - clients['egg'].y < 40  ) {
                             clients['egg'].hold = res.hold  
                             if(!clients['egg'].hold) {
-                                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) * ( hash[res.id] / 100 )
-                                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) * ( hash[res.id] / 100 )
+                                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) * ( hash[res.id] / 150 )
+                                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) * ( hash[res.id] / 150 )
                                 console.log(
                                     'yspeed: ', clients['egg'].dy,
                                     'xsped: ', clients['egg'].dx
                                 )
                             } 
-                            hash[res.id] = count++
+                            if( !hash[res.id] ) hash[res.id] = 0;
+                            if( hash[res.id] <= 200 ) hash[res.id]++
+                            console.log(hash[res.id] )
         } 
         
         
@@ -45,11 +47,20 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
         ) {
             if(clients['egg'].hold) {
 
-                if(  tempY >= 20 ) y = clients[res.id].y + 20
-                if( tempY <= -20  ) y = clients[res.id].y - 20
+                if(  tempY >= 38 ) y = clients[res.id].y + 38
+                if( tempY <= -38  ) y = clients[res.id].y - 38
         
-                if(  tempX >= 20 ) x = clients[res.id].x + 20
-                if( tempX <= -20  ) x = clients[res.id].x - 20
+                if(  tempX >= 38 ) x = clients[res.id].x + 38
+                if( tempX <= -38  ) x = clients[res.id].x - 38
+
+                // bottom wall
+                if( y > 460 ) y = 460
+                // right wall
+                if( x < 0 ) x = 0
+                // left wall
+                if( y < 0 ) y = 0
+                // top wall
+                if( x > 620 ) x = 620
 
                 clients['egg'].dx = 0;
                 clients['egg'].dy = 0;
