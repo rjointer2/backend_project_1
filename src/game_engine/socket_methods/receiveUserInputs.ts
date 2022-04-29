@@ -4,30 +4,36 @@ import clients from "../clients";
 
 export default function receiveUserInputs( socket: Socket, io: Socket ) {
 
-    let count = 0;
     let hash: { [index: string]: number } = {};
 
-
-
     socket.on('holdEgg', (res: { id: string, hold: boolean }) => {
-        if( clients[res.id].x - clients['egg'].x > -40 
-                && clients[res.id].x - clients['egg'].x < 40 
-                    && clients[res.id].y - clients['egg'].y > -40 
-                        && clients[res.id].y - clients['egg'].y < 40  ) {
-                            clients['egg'].hold = res.hold  
-                            if(!clients['egg'].hold) {
-                                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) * ( hash[res.id] / 150 )
-                                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) * ( hash[res.id] / 150 )
-                                console.log(
-                                    'yspeed: ', clients['egg'].dy,
-                                    'xsped: ', clients['egg'].dx
-                                )
-                            } 
-                            if( !hash[res.id] ) hash[res.id] = 0;
-                            if( hash[res.id] <= 200 ) hash[res.id]++
-                            console.log(hash[res.id] )
+        if( 
+            clients[res.id].x - clients['egg'].x > -40 
+            && clients[res.id].x - clients['egg'].x < 40 
+            && clients[res.id].y - clients['egg'].y > -40 
+            && clients[res.id].y - clients['egg'].y < 40  
+        ) {
+            clients['egg'].heldBy = res.id 
+
+            if( clients['egg'].heldBy !== res.id ) return;
+
+            if( clients['egg'].heldBy ) console.log( clients['egg'].heldBy )
+
+            if( res.hold === false ) clients['egg'].heldBy = null
+                
+
+            if(!clients['egg'].heldBy) {
+                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) * ( hash[res.id] / 150 )
+                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) * ( hash[res.id] / 150 )
+                console.log(
+                    'yspeed: ', clients['egg'].dy,
+                    'xsped: ', clients['egg'].dx
+                )
+            } 
+            if( !hash[res.id] ) hash[res.id] = 0;
+            if( hash[res.id] <= 200 ) hash[res.id]++
+            console.log(hash[res.id] )
         } 
-        
         
     })
 
@@ -45,7 +51,7 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
             && clients[res.id].y - clients['egg'].y >= -40 
             && clients[res.id].y - clients['egg'].y <= 40 
         ) {
-            if(clients['egg'].hold) {
+            if( clients['egg'].heldBy === res.id ) {
 
                 if(  tempY >= 38 ) y = clients[res.id].y + 38
                 if( tempY <= -38  ) y = clients[res.id].y - 38
