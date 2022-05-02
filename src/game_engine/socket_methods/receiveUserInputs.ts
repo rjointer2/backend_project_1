@@ -93,10 +93,10 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
         if(clients[res.id]) {
 
             if( !res.direction.q ) {
-                if( res.direction.ArrowRight || res.direction.d ) clients[res.id].x = clients[res.id].x + 3;
-                if( res.direction.ArrowUp || res.direction.w ) clients[res.id].y = clients[res.id].y - 3;
-                if( res.direction.ArrowLeft || res.direction.a ) clients[res.id].x = clients[res.id].x - 3;
-                if( res.direction.ArrowDown || res.direction.s ) clients[res.id].y = clients[res.id].y + 3;
+                if( res.direction.ArrowRight || res.direction.d ) clients[res.id].x = clients[res.id].x + clients[res.id].dx;
+                if( res.direction.ArrowUp || res.direction.w ) clients[res.id].y = clients[res.id].y - clients[res.id].dy;
+                if( res.direction.ArrowLeft || res.direction.a ) clients[res.id].x = clients[res.id].x - clients[res.id].dx;
+                if( res.direction.ArrowDown || res.direction.s ) clients[res.id].y = clients[res.id].y + clients[res.id].dy;
                 clients[res.id].hold = false
             }
         

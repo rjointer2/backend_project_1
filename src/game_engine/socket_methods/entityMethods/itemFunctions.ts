@@ -1,4 +1,5 @@
-import clients from "../clients";
+import clients from "../../clients";
+import { activeSpeedEffect } from "../itemEffectMethods/speedEffect";
 import { ghostItem, speedItem } from "./gameItems";
 
 
@@ -11,7 +12,7 @@ export default function itemFunctions( id: string ) {
             && clients[id].y - clients[item].y > -20 
             && clients[id].y - clients[item].y < 20 ) {
 
-                console.log('touching')
+            if( item === speedItem ) activeSpeedEffect( clients[id], id )
 
         }
     }

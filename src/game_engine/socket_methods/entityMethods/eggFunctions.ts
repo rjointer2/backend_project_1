@@ -1,5 +1,5 @@
 
-import clients from "../clients"
+import clients from "../../clients"
 import { speedItem } from "./gameItems"
 
 export default function eggFunctions() {
