@@ -128,23 +128,3 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
 
     })
 }
-
-
-/* clients[res.id].x = res.x
-            clients[res.id].y = res.y */
-
-            /* const prevX = clients[res.id].x
-            const prevY = clients[res.id].y
-
-            const newX = res.x;
-            const newY = res.y;
-
-            clients[res.id].x = newX
-            clients[res.id].y = newY
-            clients[res.id].dx = prevX - newX
-            clients[res.id].dy = prevY - newY */
-
-            //prevX - newX > 0 ? console.log('left') : console.log('right');
-            //prevY - newY > 0 ? console.log('up') : console.log('down');
-
-            //console.log(`x_vel: ${prevX - newX}, y_vel: ${prevY - newY}`)

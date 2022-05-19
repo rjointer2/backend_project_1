@@ -44,9 +44,24 @@ export default function eggFunctions() {
             clients['egg'].dy /= 1.001
         }
 
+        // egg facing direction 
+
+        const prevX = clients['egg'].x
+
+        console.log( clients['egg'].xDir )
 
         clients['egg'].x += clients['egg'].dx
         clients['egg'].y += clients['egg'].dy
+
+        switch( prevX - clients['egg'].x ) {
+            case 0:
+                  
+            break;
+            default:
+                prevX - clients['egg'].x > 0 ? 
+                clients['egg'].xDir = 'left':
+                clients['egg'].xDir = 'right'
+        }
 
     }
 
