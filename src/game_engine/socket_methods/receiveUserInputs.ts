@@ -89,15 +89,31 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
         }
     ) => {
 
-
         if(clients[res.id]) {
 
             if( !res.direction.q ) {
+
+                const prevX =  clients[res.id].x 
+
+
                 if( res.direction.ArrowRight || res.direction.d ) clients[res.id].x = clients[res.id].x + clients[res.id].dx;
                 if( res.direction.ArrowUp || res.direction.w ) clients[res.id].y = clients[res.id].y - clients[res.id].dy;
                 if( res.direction.ArrowLeft || res.direction.a ) clients[res.id].x = clients[res.id].x - clients[res.id].dx;
                 if( res.direction.ArrowDown || res.direction.s ) clients[res.id].y = clients[res.id].y + clients[res.id].dy;
                 clients[res.id].hold = false
+
+                switch( prevX - clients[res.id].x ) {
+                    case 0:
+                        console.log(
+                            `direction: ${ clients[res.id].xDir }`,
+                        );
+                    break;
+                    default:
+                        prevX - clients[res.id].x > 0 ? 
+                        clients[res.id].xDir = 'left':
+                        clients[res.id].xDir = 'right'
+                }
+
             }
         
             // wall detction 

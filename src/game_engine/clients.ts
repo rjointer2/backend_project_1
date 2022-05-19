@@ -4,6 +4,7 @@ const clients: {[index: string]: {
     height: number, width: number,  
     dx: number, dy: number, speed: number,
     hold: boolean, heldBy?: null | string, color?: string
+    xDir?: 'left' | 'right'
 }} = {};
 
 
