@@ -5,8 +5,8 @@ export let isSpeedActive: { [index: string]: boolean } = {};
 
 export function activeSpeedEffect( client: typeof clients[''], id: string ) {
 
-    client.dx = client.dy + 3
-    client.dy = client.dy + 3
+    client.dx = client.dy + 4
+    client.dy = client.dy + 4
     isSpeedActive[id] = true
     
     delete clients['speedItem']

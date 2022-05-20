@@ -1,67 +1,23 @@
 
 import clients from "../../clients"
-import { speedItem } from "./gameItems"
+import { clientCollisionDetection, velocityClientCollisionFromWall } from "../vectorsAndPhyiscsMethod/collisionMethod";
+import { clientAcceleration, directionClientFacing } from "../vectorsAndPhyiscsMethod/vectorAndDirectionMethods";
 
 export default function eggFunctions() {
 
     if(clients['egg']) {
 
-        for ( let id in clients ) {
+        for( let id in clients ) {
             if( id === 'egg' ) continue;
-            if( clients[id].x - clients['egg'].x > -20 
-                && clients[id].x - clients['egg'].x < 20 
-                && clients[id].y - clients['egg'].y > -20 
-                && clients[id].y - clients['egg'].y < 20 ) {
-    
-                    console.log('touching')
-    
-            }
+            clientCollisionDetection( clients[id], clients['egg'] )
         }
 
-        // bottom wall
-        if( clients['egg'].y > 460 ) {
-            clients['egg'].dy = -clients['egg'].dy
-            clients['egg'].y = 460
-        }
-        // right wall
-        if( clients['egg'].x < 0 ) {
-            clients['egg'].dx = -clients['egg'].dx
-            clients['egg'].x = 0
-        }
-        // left wall
-        if( clients['egg'].y < 0 ) {
-            clients['egg'].dy = -clients['egg'].dy
-            clients['egg'].y = 0
-        }
-        // top wall
-        if( clients['egg'].x > 620 ) {
-            clients['egg'].dx = -clients['egg'].dx
-            clients['egg'].x = 620
-        }
+        velocityClientCollisionFromWall( clients['egg'] );
 
-        if( !( clients['egg'].dy <= .6 && clients['egg'].dx <= .6  ) ) {
-            clients['egg'].dx /= 1.001
-            clients['egg'].dy /= 1.001
-        }
+        directionClientFacing( clients["egg"] );
+        
+        clientAcceleration( clients['egg'] )
 
-        // egg facing direction 
-
-        const prevX = clients['egg'].x
-
-        console.log( clients['egg'].xDir )
-
-        clients['egg'].x += clients['egg'].dx
-        clients['egg'].y += clients['egg'].dy
-
-        switch( prevX - clients['egg'].x ) {
-            case 0:
-                  
-            break;
-            default:
-                prevX - clients['egg'].x > 0 ? 
-                clients['egg'].xDir = 'left':
-                clients['egg'].xDir = 'right'
-        }
 
     }
 

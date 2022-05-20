@@ -102,17 +102,14 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
                 if( res.direction.ArrowDown || res.direction.s ) clients[res.id].y = clients[res.id].y + clients[res.id].dy;
                 clients[res.id].hold = false
 
-                switch( prevX - clients[res.id].x ) {
-                    case 0:
-                        console.log(
-                            `direction: ${ clients[res.id].xDir }`,
-                        );
-                    break;
-                    default:
-                        prevX - clients[res.id].x > 0 ? 
-                        clients[res.id].xDir = 'left':
-                        clients[res.id].xDir = 'right'
-                }
+
+                if( prevX - clients[res.id].x === 0 ) return;
+
+                prevX - clients[res.id].x > 0 ? 
+                clients[res.id].xDir = 'left':
+                clients[res.id].xDir = 'right'
+
+                console.log(  clients[res.id].xDir )
 
             }
         
