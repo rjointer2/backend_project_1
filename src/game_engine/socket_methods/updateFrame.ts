@@ -1,10 +1,11 @@
 
 import { Socket } from "socket.io"
 import clients from "../clients"
-import eggFunctions from "./entityMethods/eggFunctions";
+import magicBallFunctions from "./entityMethods/magicBallObject";
 import { ghostItem, speedItem } from "./entityMethods/gameItems";
 import itemFunctions from "./entityMethods/itemFunctions";
 import spawnItem from "./spawnMethods/spawnItems";
+import updateClients from './entityMethods/updateClients';
 
 
 export default function updateFrame( socket: Socket, io: Socket ) {
@@ -17,11 +18,12 @@ export default function updateFrame( socket: Socket, io: Socket ) {
     setInterval(() => {
 
         for( let id in clients ) {
-            if( id === ghostItem || id === speedItem || id === 'egg' ) continue;
+            if( id === ghostItem || id === speedItem || id === 'magicBall' ) continue;
             itemFunctions( id )
         }
         
-        eggFunctions();
+        magicBallFunctions();
+        updateClients()
 
         io.emit('position', clients);
 

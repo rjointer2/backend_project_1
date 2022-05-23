@@ -3,7 +3,7 @@ import clients from "../../clients";
 
 export let isSpeedActive: { [index: string]: boolean } = {};
 
-export function activeSpeedEffect( client: typeof clients[''], id: string ) {
+export function applySpeedEffect( client: typeof clients[''], id: string ) {
 
     client.dx = client.dy + 4
     client.dy = client.dy + 4

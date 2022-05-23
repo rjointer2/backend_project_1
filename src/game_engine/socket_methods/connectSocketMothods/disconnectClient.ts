@@ -9,7 +9,7 @@ export default function disconnectClient( socket: Socket, io: Socket ) {
 
         if( Object.keys(clients).length === 1 ) {
             //console.log(Object.keys(clients)[0])
-            delete clients['egg']
+            delete clients['magicBall']
         }
 
         //console.log(clients)

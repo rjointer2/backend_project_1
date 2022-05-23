@@ -2,32 +2,42 @@
 import { Socket } from "socket.io";
 import clients from "../clients";
 
+type key_map = {
+    ArrowUp: { pressed: false, direction: "ArrowUp" },
+    ArrowDown: { pressed: false, direction: "ArrowDown" },
+    ArrowLeft: { pressed: false, direction: "ArrowLeft" },
+    ArrowRight: { pressed: false, direction: "ArrowRight" },
+}
+
+
+
 export default function receiveUserInputs( socket: Socket, io: Socket ) {
+
 
     let hash: { [index: string]: number } = {};
 
-    socket.on('holdEgg', (res: { id: string, hold: boolean }) => {
+    socket.on('holdMagicBall', (res: { id: string, hold: boolean }) => {
         if( 
-            clients[res.id].x - clients['egg'].x > -40 
-            && clients[res.id].x - clients['egg'].x < 40 
-            && clients[res.id].y - clients['egg'].y > -40 
-            && clients[res.id].y - clients['egg'].y < 40  
+            clients[res.id].x - clients['magicBall'].x > -40 
+            && clients[res.id].x - clients['magicBall'].x < 40 
+            && clients[res.id].y - clients['magicBall'].y > -40 
+            && clients[res.id].y - clients['magicBall'].y < 40  
         ) {
-            clients['egg'].heldBy = res.id 
+            clients['magicBall'].heldBy = res.id 
 
-            if( clients['egg'].heldBy !== res.id ) return;
+            if( clients['magicBall'].heldBy !== res.id ) return;
 
-            if( clients['egg'].heldBy ) console.log( clients['egg'].heldBy )
+            if( clients['magicBall'].heldBy ) console.log( clients['magicBall'].heldBy )
 
-            if( res.hold === false ) clients['egg'].heldBy = null
+            if( res.hold === false ) clients['magicBall'].heldBy = null
                 
 
-            if(!clients['egg'].heldBy) {
-                clients['egg'].dx = (clients['egg'].x - clients[res.id].x) * ( hash[res.id] / 150 )
-                clients['egg'].dy = (clients['egg'].y - clients[res.id].y) * ( hash[res.id] / 150 )
+            if(!clients['magicBall'].heldBy) {
+                clients['magicBall'].dx = (clients['magicBall'].x - clients[res.id].x) * ( hash[res.id] / 250 )
+                clients['magicBall'].dy = (clients['magicBall'].y - clients[res.id].y) * ( hash[res.id] / 250 )
                 console.log(
-                    'yspeed: ', clients['egg'].dy,
-                    'xsped: ', clients['egg'].dx
+                    'yspeed: ', clients['magicBall'].dy,
+                    'xsped: ', clients['magicBall'].dx
                 )
             } 
             if( !hash[res.id] ) hash[res.id] = 0;
@@ -37,7 +47,7 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
         
     })
 
-    socket.on('aimEgg', ( res: {
+    socket.on('aimMagicBall', ( res: {
         id: string, mx: number, my: number
     }) => {
 
@@ -46,12 +56,12 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
         let tempY = res.my - clients[res.id].y;
         let tempX = res.mx - clients[res.id].x;
 
-        if( clients[res.id].x - clients['egg'].x >= -40 
-            && clients[res.id].x - clients['egg'].x <= 40 
-            && clients[res.id].y - clients['egg'].y >= -40 
-            && clients[res.id].y - clients['egg'].y <= 40 
+        if( clients[res.id].x - clients['magicBall'].x >= -40 
+            && clients[res.id].x - clients['magicBall'].x <= 40 
+            && clients[res.id].y - clients['magicBall'].y >= -40 
+            && clients[res.id].y - clients['magicBall'].y <= 40 
         ) {
-            if( clients['egg'].heldBy === res.id ) {
+            if( clients['magicBall'].heldBy === res.id ) {
 
                 if(  tempY >= 38 ) y = clients[res.id].y + 38
                 if( tempY <= -38  ) y = clients[res.id].y - 38
@@ -68,28 +78,42 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
                 // top wall
                 if( x > 620 ) x = 620
 
-                clients['egg'].dx = 0;
-                clients['egg'].dy = 0;
+                clients['magicBall'].dx = 0;
+                clients['magicBall'].dy = 0;
         
-                clients['egg'].y = y
-                clients['egg'].x = x
+                clients['magicBall'].y = y
+                clients['magicBall'].x = x
                 
             }
                                        
         }
-    })
+    });
 
-    socket.on("move", ( res: { 
-        id: string, 
-        direction: { 
-            [index: KeyboardEvent['key']]: boolean
-        }
-        host: boolean, dx: number, dy: number,
-        speed: number, hold: boolean
-        }
+
+    socket.on("move", async( res: any
     ) => {
 
         if(clients[res.id]) {
+
+            res.direction.ArrowRight || res.direction.d ? clients[res.id].right = true : clients[res.id].right = false 
+            res.direction.ArrowUp || res.direction.w ? clients[res.id].up = true : clients[res.id].up = false 
+            
+            res.direction.ArrowLeft || res.direction.a ? clients[res.id].left = true : clients[res.id].left = false
+            res.direction.ArrowDown || res.direction.s ? clients[res.id].down = true : clients[res.id].down = false
+        
+
+        }
+
+    })
+
+}
+
+
+/* 
+
+console.log( res  )
+
+            
 
             if( !res.direction.q ) {
 
@@ -98,6 +122,7 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
 
                 if( res.direction.ArrowRight || res.direction.d ) clients[res.id].x = clients[res.id].x + clients[res.id].dx;
                 if( res.direction.ArrowUp || res.direction.w ) clients[res.id].y = clients[res.id].y - clients[res.id].dy;
+                
                 if( res.direction.ArrowLeft || res.direction.a ) clients[res.id].x = clients[res.id].x - clients[res.id].dx;
                 if( res.direction.ArrowDown || res.direction.s ) clients[res.id].y = clients[res.id].y + clients[res.id].dy;
                 clients[res.id].hold = false
@@ -109,7 +134,7 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
                 clients[res.id].xDir = 'left':
                 clients[res.id].xDir = 'right'
 
-                console.log(  clients[res.id].xDir )
+                console.log(  clients[res.id].dx )
 
             }
         
@@ -123,5 +148,4 @@ export default function receiveUserInputs( socket: Socket, io: Socket ) {
 
         io.emit('position', clients);
 
-    })
-}
+*/
