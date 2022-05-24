@@ -1,6 +1,6 @@
 
 import { Socket } from "socket.io";
-import clients from "../../clients";
+import clients from "./clients";
 
 export default function disconnectClient( socket: Socket, io: Socket ) {
 
@@ -8,11 +8,9 @@ export default function disconnectClient( socket: Socket, io: Socket ) {
         delete clients[socket.id];
 
         if( Object.keys(clients).length === 1 ) {
-            //console.log(Object.keys(clients)[0])
             delete clients['magicBall']
         }
 
-        //console.log(clients)
         io.emit('position', clients);
     });
 }

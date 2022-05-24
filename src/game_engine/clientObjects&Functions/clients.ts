@@ -1,5 +1,5 @@
 
-const clients: {[index: string]: { 
+export type clientType = {[index: string]: { 
     x: number, y: number, host: boolean, 
     height: number, width: number,  
     dx: number, dy: number, speed: number,
@@ -10,7 +10,15 @@ const clients: {[index: string]: {
     right?: boolean,
     up?: boolean,
     down?: boolean,
-}} = {};
+
+    defeated?: false
+    
+    speedActive?: boolean
+    ghostActive?: boolean
+    
+}}
+
+const clients: clientType = {};
 
 
 export default clients

@@ -1,6 +1,6 @@
 
 import { Socket } from "socket.io";
-import clients from "../../clients";
+import clients from "../clientObjects&Functions/clients";
 
 export default function spawnMagicBall( socket: Socket, io: Socket ) {
     if( !clients['magicBall'] ) {

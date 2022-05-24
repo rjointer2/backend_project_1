@@ -1,21 +1,27 @@
 
 import { Socket } from "socket.io";
-import connectClient from "./socket_methods/connectSocketMothods/connectClient";
-import disconnectClient from "./socket_methods/connectSocketMothods/disconnectClient";
-import updateFrame from "./socket_methods/updateFrame";
-import receiveUserInputs from "./socket_methods/receiveUserInputs";
-import spawnMagicBall from "./socket_methods/spawnMethods/spawnMagicBall";
+import connectClient from "./clientObjects&Functions/connectClient";
+import disconnectClient from "./clientObjects&Functions/disconnectClient";
+import updateFrame from "./updateFrame";
+import receiveUserInputs from "./clientObjects&Functions/receiveUserInputs";
+import spawnMagicBall from "./spawnMethods/spawnMagicBall";
 
 
 export const init = ( socket: Socket, io: Socket ) => {
 
-    updateFrame( socket, io );
+   
+    // client connection functions
+    connectClient( socket, io );
+    disconnectClient( socket, io );
+
+    spawnMagicBall( socket, io );
+
 
     receiveUserInputs( socket, io );
 
-    connectClient( socket, io );
-    spawnMagicBall( socket, io );
-    disconnectClient( socket, io );
+
+    // methods to update objects
+    updateFrame( socket, io );
 
 
 }
