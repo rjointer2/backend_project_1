@@ -6,13 +6,7 @@ export default function connectClient( socket: Socket, io: Socket ) {
 
     socket.on('newClient',  ( clientData ) => {
         clients[socket.id] = clientData;
+        console.log(clients)
 
-        console.log(socket.rooms)
-        
-        /* clients[socket.id].color = clientData.color
-
-        socket.emit('registerId', socket.id)
-
-        io.emit('position', clients); */
     });
 }

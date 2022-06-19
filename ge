@@ -1,0 +1,52 @@
+
+    // client connection functions
+    /* connectClient( socket, io );
+    disconnectClient( socket, io ); */
+
+
+    // room logic
+    createRoom( socket, io );
+
+    socket.on($$joinRoom, (roomName) => {
+
+        console.log(socket.rooms)
+
+        if( roomTraffic.has(roomName) === false ) {
+            socket.emit($$redirect, 'fallback');
+            return;
+        }
+
+        roomTraffic.delete(roomName)
+
+        console.log(socket.rooms)
+        socket.rooms.delete(socket.id), socket.rooms.add(roomName);
+        socket.join( roomName );
+        console.log(socket.rooms)
+        
+    })
+
+    /* socket.on($$joinRoom, (roomName) => {
+
+        if( (roomName in rooms ) === false ) {
+            socket.emit($$redirect, 'fallback');
+            return;
+        }
+
+        if( rooms[roomName].host === null ) {
+            rooms[roomName].host = socket.id
+        }
+
+        socket.join(roomName)
+        console.log(socket.rooms)
+
+        
+    })
+
+    socket.on($$updateRooms, (roomName) =>{
+        console.log(roomName)
+        io.to(roomName).emit('sayHi', 'sayHi')
+    })
+
+    socket.on( 'disconnect', () => {
+        console.log(socket.rooms)
+    }) */
